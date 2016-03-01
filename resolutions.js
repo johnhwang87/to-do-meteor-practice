@@ -7,7 +7,17 @@ if (Meteor.isClient) {
   Template.body.helpers({
     // calling all resolutions from the database
     resolutions: function() {
+      if (Session.get('hideFinished')) {
+        // checking if resolution is checked, and returning the nonchecked resolutions
+        return Resolutions.find({checked: {$ne: true}});
+      } else {
+
       return Resolutions.find();
+      }
+    },
+    // below function syncs the session variable to the checkbox
+    hideFinished: function () {
+      return Session.get('hideFinished');
     }
   });
   // Calling events into your app
@@ -31,6 +41,10 @@ if (Meteor.isClient) {
       // return false does not refresh the page
       return false;
 
+    },
+    'change .hide-finished': function (event) {
+      // when checkboxed is checked, it will fire this function
+      Session.set('hideFinished', event.target.checked);
     }
   });
   // below references resolution template, not body because the delete button is in the template
