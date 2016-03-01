@@ -1,0 +1,43 @@
+<head>
+  <title>resolutions</title>
+</head>
+
+<body>
+
+
+  <div class="container">
+    <header>
+      <h1>Monthly Resolutions</h1>
+      <!-- adding form for adding resolutions -->
+      <form class="new-resolution">
+        <input type="text" name="title" placeholder="A New Resolution">
+        <input type="submit" value="Submit">
+      </form>
+    </header>
+
+      <ul>
+      <!-- iterates over resolutions -->
+        {{#each resolutions}}
+        <!-- goes into the template each time and outputting the {{title}} -->
+          {{> resolution}}
+      <!-- ends the iteration -->
+        {{/each}}
+      </ul>
+  </div>
+</body>
+
+
+<!-- template crap that gets called in the body with {{> hello}} -->
+<!-- <template name="hello">
+  <button>Click Me</button>
+  <p>You've pressed the button {{counter}} times.</p>
+</template> -->
+  <template name="resolution">
+      <!-- unoderdered list of resolutions, and outputting each one -->
+      <!-- below, adding class if the item is checked, give it checked class so css shows linethrough -->
+      <li class="{{#if checked}}checked{{/if}}">
+        <input type="checkbox" checked="{{checked}}" class="toggle-checked">
+        <span class="text">{{title}}</span>
+        <button class="delete">Remove</button>
+      </li>
+  </template>
