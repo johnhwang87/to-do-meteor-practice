@@ -50,13 +50,13 @@ if (Meteor.isClient) {
       // this._id takes the id, and changes the object inside.
       // $set sets whatever we are going to change or modify, which is checked:
       // !this.checked part is saying whatever boolean it is, make it opposite when clicked
-      Resolutions.update(this._id, {$set: {checked: !this.checked}})
+      Meteor.call("updateResolution", this._id, !this.checked)
     }, //have to have comma here or it breaks...
     // because we are looking for click event, that is the first part of the string
     // .delete is because we are looking for the delete class button
     'click .delete': function () {
       // this._id will reference to whatever object id that is being clicked... mongo is awesome
-      Resolutions.remove(this._id);
+      Meteor.call("deleteResolution", this._id);
     }
   });
 // modifying accounts password package to take in username instead of default email
@@ -79,6 +79,14 @@ Meteor.methods({
         title : title,
         createdAt : new Date()
       });
+  },
+  // method for deleting resolution
+  deleteResolution: function(id) {
+    Resolutions.remove(id);
+  },
+  // method for updating resolutions
+  updateResolution: function(id, checked) {
+    Resolutions.update(id, {$set: {checked: checked}})
   }
 
 })
