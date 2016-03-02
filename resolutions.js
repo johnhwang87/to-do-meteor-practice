@@ -29,12 +29,8 @@ if (Meteor.isClient) {
       // .target targets the resolution form .value is the actual value of the field
       var title = event.target.title.value;
 
-      // below is inserting the above info into the Collection(backend database)
-      Resolutions.insert({
-        // title is equal to the title which is the .value at above
-        title : title,
-        createdAt : new Date()
-      });
+      // calling the method of adding Resolution. This is to make the app secure.
+      Meteor.call("addResolution", title); //title is being passed
 
       // clearing the form after you submit
       event.target.title.value = "";
@@ -76,3 +72,15 @@ if (Meteor.isServer) {
     // code to run on server at startup
   });
 }
+// methods that clients will have access to. This is after removing insecure package, so that users cant open up console and insert crap on they own.
+Meteor.methods({
+  addResolution: function(title) {
+      Resolutions.insert({
+        title : title,
+        createdAt : new Date()
+      });
+  }
+
+})
+
+
