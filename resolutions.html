@@ -13,11 +13,15 @@
         <input type="checkbox" checked="{{hideFinished}}">
         Hide Finished Resolutions
       </label>
+
+      <!-- this if statement only shows if it is current user that is logged in... -->
+      {{#if currentUser}}
       <!-- adding form for adding resolutions -->
       <form class="new-resolution">
         <input type="text" name="title" placeholder="A New Resolution">
         <input type="submit" value="Submit">
       </form>
+      {{/if}}
     </header>
 
       <ul>
@@ -28,7 +32,10 @@
       <!-- ends the iteration -->
         {{/each}}
       </ul>
+      <!-- adding accounts-password and accounts-ui packages, and then inserting this line creates a login function... for email... -->
+  {{> loginButtons}}
   </div>
+
 </body>
 
 

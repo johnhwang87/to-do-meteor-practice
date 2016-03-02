@@ -63,7 +63,10 @@ if (Meteor.isClient) {
       Resolutions.remove(this._id);
     }
   });
-
+// modifying accounts password package to take in username instead of default email
+Accounts.ui.config({
+  passwordSignupFields: "USERNAME_ONLY"
+});
 
 
 }
