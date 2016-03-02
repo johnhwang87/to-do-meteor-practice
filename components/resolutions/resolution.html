@@ -1,0 +1,26 @@
+<!-- template crap that gets called in the body with {{> hello}} -->
+<!-- <template name="hello">
+  <button>Click Me</button>
+  <p>You've pressed the button {{counter}} times.</p>
+</template> -->
+  <template name="resolution">
+      <!-- unoderdered list of resolutions, and outputting each one -->
+      <!-- below, adding class if the item is checked, give it checked class so css shows linethrough -->
+      <li class="{{#if checked}}checked{{/if}}">
+        <!-- {{owner}} -->
+        {{#if isOwner}}
+        <input type="checkbox" checked="{{checked}}" class="toggle-checked">
+          <button class="toggle-private">
+            {{#if private}}
+              Private
+            {{else}}
+              Public
+            {{/if}}
+          </button>
+        {{/if}}
+        <span class="text">{{title}}</span>
+       {{#if isOwner}}
+        <button class="delete">Remove</button>
+       {{/if}}
+      </li>
+  </template>

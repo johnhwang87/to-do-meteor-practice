@@ -3,6 +3,8 @@ Resolutions = new Mongo.Collection('resolutions');
 
 // runs on client startup
 if (Meteor.isClient) {
+  // 'subscribing to the server data of resolutions'
+  Meteor.subscribe("resolutions");
   // template helper allows you to use information on the page
   Template.body.helpers({
     // calling all resolutions from the database
@@ -20,6 +22,7 @@ if (Meteor.isClient) {
       return Session.get('hideFinished');
     }
   });
+
   // Calling events into your app
   // this is named .body because it is not in the resolutio template
   Template.body.events({
@@ -43,22 +46,7 @@ if (Meteor.isClient) {
       Session.set('hideFinished', event.target.checked);
     }
   });
-  // below references resolution template, not body because the delete button is in the template
-  Template.resolution.events({
-    // function for checking resolutions updating
-    'click .toggle-checked': function () {
-      // this._id takes the id, and changes the object inside.
-      // $set sets whatever we are going to change or modify, which is checked:
-      // !this.checked part is saying whatever boolean it is, make it opposite when clicked
-      Meteor.call("updateResolution", this._id, !this.checked)
-    }, //have to have comma here or it breaks...
-    // because we are looking for click event, that is the first part of the string
-    // .delete is because we are looking for the delete class button
-    'click .delete': function () {
-      // this._id will reference to whatever object id that is being clicked... mongo is awesome
-      Meteor.call("deleteResolution", this._id);
-    }
-  });
+
 // modifying accounts password package to take in username instead of default email
 Accounts.ui.config({
   passwordSignupFields: "USERNAME_ONLY"
@@ -71,22 +59,57 @@ if (Meteor.isServer) {
   Meteor.startup(function () {
     // code to run on server at startup
   });
+  // after removing autopublish (listing all resolutions, not just user specific, we gotta add publish to show only user created resolutions)
+  Meteor.publish("resolutions", function() {
+    return Resolutions.find({
+      // make private private to user, only public can be shown to all
+      $or: [
+      // ne is not equal
+        { private: {$ne: true} },
+        { owner: this.userId}
+      ]
+    });
+  });
 }
 // methods that clients will have access to. This is after removing insecure package, so that users cant open up console and insert crap on they own.
 Meteor.methods({
   addResolution: function(title) {
       Resolutions.insert({
         title : title,
-        createdAt : new Date()
+        createdAt : new Date(),
+        // when someone creates new resolution, we will get new user id attached to it
+        owner: Meteor.userId()
       });
   },
   // method for deleting resolution
   deleteResolution: function(id) {
-    Resolutions.remove(id);
+    // throws error if user is not the user that created resolution if you want to set to public or private
+    var res = Resolutions.findOne(id);
+      if(res.owner !== Meteor.userId()) {
+        throw new Meteor.Error('not-authorized user');
+      }
+       Resolutions.remove(id);
   },
   // method for updating resolutions
   updateResolution: function(id, checked) {
+    var res = Resolutions.findOne(id);
+      if(res.owner !== Meteor.userId()) {
+        throw new Meteor.Error('not-authorized user');
+      }
     Resolutions.update(id, {$set: {checked: checked}})
+  },
+  // adding set private method
+  setPrivate: function(id, private) {
+    // updating resolution to private or public
+    // setting a single resolution to res (findOne is mongo )
+    var res = Resolutions.findOne(id);
+      // throws error if user is not the user that created resolution if you want to set to public or private
+      if(res.owner !== Meteor.userId()) {
+        throw new Meteor.Error('not-authorized user');
+      }
+
+
+         Resolutions.update(id, {$set: {private: private}})
   }
 
 })
